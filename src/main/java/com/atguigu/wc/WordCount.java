@@ -16,6 +16,8 @@ import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.util.Collector;
 
+import java.util.Collections;
+
 /**
  * @ClassName: WordCount
  * @Description:
@@ -30,7 +32,7 @@ public class WordCount {
         ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
         // 从文件中读取数据
-        String inputPath = "D:\\Projects\\BigData\\FlinkTutorial\\src\\main\\resources\\hello.txt";
+        String inputPath = "D:\\dev\\bigdata\\FlinkTutorialInJava\\src\\main\\resources\\hello.txt";
         DataSet<String> inputDataSet = env.readTextFile(inputPath);
 
         // 对数据集进行处理，按空格分词展开，转换成(word, 1)二元组进行统计
@@ -49,8 +51,10 @@ public class WordCount {
             String[] words = value.split(" ");
             // 遍历所有word，包成二元组输出
             for (String word : words) {
-                out.collect(new Tuple2<>(word, 1));
+                out.collect(new Tuple2<String, Integer>(word, 1));
             }
         }
     }
+
+
 }

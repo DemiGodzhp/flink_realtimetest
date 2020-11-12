@@ -10,6 +10,7 @@ package com.atguigu.apitest.transform;/**
 
 import com.atguigu.apitest.beans.SensorReading;
 import org.apache.flink.api.common.functions.MapFunction;
+import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.api.java.tuple.Tuple;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.KeyedStream;
@@ -30,23 +31,22 @@ public class TransformTest2_RollingAggregation {
         // 从文件读取数据
         DataStream<String> inputStream = env.readTextFile("D:\\Projects\\BigData\\FlinkTutorial\\src\\main\\resources\\sensor.txt");
 
-        // 转换成SensorReading类型
-//        DataStream<SensorReading> dataStream = inputStream.map(new MapFunction<String, SensorReading>() {
-//            @Override
-//            public SensorReading map(String value) throws Exception {
-//                String[] fields = value.split(",");
-//                return new SensorReading(fields[0], new Long(fields[1]), new Double(fields[2]));
-//            }
-//        });
-
-        DataStream<SensorReading> dataStream = inputStream.map( line -> {
-            String[] fields = line.split(",");
-            return new SensorReading(fields[0], new Long(fields[1]), new Double(fields[2]));
-        } );
+        DataStream<SensorReading> dataStream = inputStream.map(new MapFunction<String, SensorReading>() {
+            @Override
+            public SensorReading map(String line) throws Exception {
+                String[] fields = line.split(",");
+                return new SensorReading(fields[0], new Long(fields[1]), new Double(fields[2]));
+            }
+        });
 
         // 分组
         KeyedStream<SensorReading, Tuple> keyedStream = dataStream.keyBy("id");
-        KeyedStream<SensorReading, String> keyedStream1 = dataStream.keyBy(data -> data.getId());
+        KeyedStream<SensorReading, String> keyedStream1 = dataStream.keyBy(new KeySelector<SensorReading, String>() {
+            @Override
+            public String getKey(SensorReading data) throws Exception {
+                return data.getId();
+            }
+        });
 //        KeyedStream<SensorReading, String> keyedStream1 = dataStream.keyBy(SensorReading::getId);
 
         // 滚动聚合，取当前最大的温度值

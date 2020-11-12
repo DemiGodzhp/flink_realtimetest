@@ -9,6 +9,7 @@ package com.atguigu.apitest.transform;/**
  */
 
 import com.atguigu.apitest.beans.SensorReading;
+import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.functions.ReduceFunction;
 import org.apache.flink.api.java.tuple.Tuple;
 import org.apache.flink.streaming.api.datastream.DataStream;
@@ -31,9 +32,12 @@ public class TransformTest3_Reduce {
         DataStream<String> inputStream = env.readTextFile("D:\\Projects\\BigData\\FlinkTutorial\\src\\main\\resources\\sensor.txt");
 
         // 转换成SensorReading类型
-        DataStream<SensorReading> dataStream = inputStream.map(line -> {
-            String[] fields = line.split(",");
-            return new SensorReading(fields[0], new Long(fields[1]), new Double(fields[2]));
+        DataStream<SensorReading> dataStream = inputStream.map(new MapFunction<String, SensorReading>() {
+            @Override
+            public SensorReading map(String line) throws Exception {
+                String[] fields = line.split(",");
+                return new SensorReading(fields[0], new Long(fields[1]), new Double(fields[2]));
+            }
         });
 
         // 分组
@@ -47,8 +51,11 @@ public class TransformTest3_Reduce {
             }
         });
 
-        keyedStream.reduce( (curState, newData) -> {
-            return new SensorReading(curState.getId(), newData.getTimestamp(), Math.max(curState.getTemperature(), newData.getTemperature()));
+        keyedStream.reduce(new ReduceFunction<SensorReading>() {
+            @Override
+            public SensorReading reduce(SensorReading curState, SensorReading newData) throws Exception {
+                return new SensorReading(curState.getId(), newData.getTimestamp(), Math.max(curState.getTemperature(), newData.getTemperature()));
+            }
         });
 
         resultStream.print();

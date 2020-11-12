@@ -23,7 +23,7 @@ public class SourceTest2_File {
         env.setParallelism(1);
 
         // 从文件读取数据
-        DataStream<String> dataStream = env.readTextFile("D:\\Projects\\BigData\\FlinkTutorial\\src\\main\\resources\\sensor.txt");
+        DataStream<String> dataStream = env.readTextFile("D:\\dev\\bigdata\\FlinkTutorialInJava\\src\\main\\resources\\sensor.txt");
 
         // 打印输出
         dataStream.print();

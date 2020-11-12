@@ -37,10 +37,13 @@ public class TransformTest4_MultipleStreams {
         DataStream<String> inputStream = env.readTextFile("D:\\Projects\\BigData\\FlinkTutorial\\src\\main\\resources\\sensor.txt");
 
         // 转换成SensorReading
-        DataStream<SensorReading> dataStream = inputStream.map(line -> {
-            String[] fields = line.split(",");
-            return new SensorReading(fields[0], new Long(fields[1]), new Double(fields[2]));
-        } );
+        DataStream<SensorReading> dataStream = inputStream.map(new MapFunction<String, SensorReading>() {
+            @Override
+            public SensorReading map(String line) throws Exception {
+                String[] fields = line.split(",");
+                return new SensorReading(fields[0], new Long(fields[1]), new Double(fields[2]));
+            }
+        });
 
         // 1. 分流，按照温度值30度为界分为两条流
         SplitStream<SensorReading> splitStream = dataStream.split(new OutputSelector<SensorReading>() {
@@ -61,8 +64,8 @@ public class TransformTest4_MultipleStreams {
         // 2. 合流 connect，将高温流转换成二元组类型，与低温流连接合并之后，输出状态信息
         DataStream<Tuple2<String, Double>> warningStream = highTempStream.map(new MapFunction<SensorReading, Tuple2<String, Double>>() {
             @Override
-            public Tuple2<String, Double> map(SensorReading value) throws Exception {
-                return new Tuple2<>(value.getId(), value.getTemperature());
+            public Tuple2<String, Double> map(SensorReading value) {
+                return new Tuple2<String, Double>(value.getId(), value.getTemperature());
             }
         });
 
@@ -70,13 +73,13 @@ public class TransformTest4_MultipleStreams {
 
         DataStream<Object> resultStream = connectedStreams.map(new CoMapFunction<Tuple2<String, Double>, SensorReading, Object>() {
             @Override
-            public Object map1(Tuple2<String, Double> value) throws Exception {
-                return new Tuple3<>(value.f0, value.f1, "high temp warning");
+            public Object map1(Tuple2<String, Double> value)  {
+                return new Tuple3<String, Double, String>(value.f0, value.f1, "high temp warning");
             }
 
             @Override
-            public Object map2(SensorReading value) throws Exception {
-                return new Tuple2<>(value.getId(), "normal");
+            public Object map2(SensorReading value)  {
+                return new Tuple2<String, String>(value.getId(), "normal");
             }
         });
 

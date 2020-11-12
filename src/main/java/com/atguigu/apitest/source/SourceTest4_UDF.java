@@ -9,6 +9,7 @@ package com.atguigu.apitest.source;/**
  */
 
 import com.atguigu.apitest.beans.SensorReading;
+import org.apache.flink.api.common.functions.RichMapFunction;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.source.SourceFunction;
@@ -35,7 +36,6 @@ public class SourceTest4_UDF {
 
         env.execute();
     }
-
     // 实现自定义的SourceFunction
     public static class MySensorSource implements SourceFunction<SensorReading>{
         // 定义一个标识位，用来控制数据的产生
@@ -47,7 +47,7 @@ public class SourceTest4_UDF {
             Random random = new Random();
 
             // 设置10个传感器的初始温度
-            HashMap<String, Double> sensorTempMap = new HashMap<>();
+            HashMap<String, Double> sensorTempMap = new HashMap<String, Double>();
             for( int i = 0; i < 10; i++ ){
                 sensorTempMap.put("sensor_" + (i+1), 60 + random.nextGaussian() * 20);
             }
@@ -68,4 +68,8 @@ public class SourceTest4_UDF {
         public void cancel() {
             running = false;
         }
-    }}
+    }
+}
+
+
+

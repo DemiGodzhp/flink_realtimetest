@@ -35,6 +35,7 @@ public class SourceTest1_Collection {
                 new SensorReading("sensor_10", 1547718205L, 38.1)
         ));
 
+
         DataStream<Integer> integerDataStream = env.fromElements(1, 2, 4, 67, 189);
 
         // 打印输出

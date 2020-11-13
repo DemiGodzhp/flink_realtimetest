@@ -31,7 +31,7 @@ public class TransformTest6_Partition {
         // 1. shuffle
         DataStream<String> shuffleStream = inputStream.shuffle();
 
-        // shuffleStream.print("shuffle");
+        shuffleStream.print("shuffle");
 
         // 2. keyBy
 

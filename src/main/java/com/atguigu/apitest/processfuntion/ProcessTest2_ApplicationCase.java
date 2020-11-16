@@ -1,4 +1,4 @@
-package com.atguigu.processfuntion;
+package com.atguigu.apitest.processfuntion;
 
 import com.atguigu.apitest.beans.SensorReading;
 import org.apache.flink.api.common.functions.MapFunction;

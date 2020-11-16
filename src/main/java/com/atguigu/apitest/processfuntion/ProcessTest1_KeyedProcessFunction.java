@@ -1,4 +1,4 @@
-package com.atguigu.processfuntion;
+package com.atguigu.apitest.processfuntion;
 
 import com.atguigu.apitest.beans.SensorReading;
 import org.apache.flink.api.common.functions.MapFunction;
@@ -9,7 +9,6 @@ import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.KeyedProcessFunction;
-import org.apache.flink.streaming.api.functions.ProcessFunction;
 import org.apache.flink.util.Collector;
 
 /**
